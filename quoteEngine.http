@@ -1,0 +1,14 @@
+@baseUrl = http://localhost:8080
+
+### Health check
+GET {{baseUrl}}/actuator/health
+
+> {%
+    client.test("Status is 200", function() {
+        client.assert(response.status === 200, "Expected 200 but got " + response.status);
+    });
+
+    client.test("Status is UP", function() {
+        client.assert(response.body.status === "UP", "Expected UP but got " + response.body.status);
+    });
+%}
