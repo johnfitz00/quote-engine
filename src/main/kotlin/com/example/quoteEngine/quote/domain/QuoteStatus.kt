@@ -1,0 +1,16 @@
+package com.example.quoteEngine.quote.domain
+
+enum class QuoteStatus {
+    DRAFT, RATED, REFERRED, BOUND, EXPIRED, DECLINED;
+
+    val allowedTransitions: Set<QuoteStatus> by lazy {
+        when (this) {
+            DRAFT    -> setOf(RATED, DECLINED)
+            RATED    -> setOf(REFERRED, BOUND, DECLINED, EXPIRED)
+            REFERRED -> setOf(BOUND, DECLINED, EXPIRED)
+            BOUND, EXPIRED, DECLINED -> emptySet()
+        }
+    }
+
+    fun canTransitionTo(next: QuoteStatus): Boolean = next in allowedTransitions
+}
