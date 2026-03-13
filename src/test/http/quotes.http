@@ -1,0 +1,165 @@
+### Quote Engine – manual request collection
+### Run requests top-to-bottom for a complete DRAFT → RATED → BOUND lifecycle.
+### quoteId is captured automatically from the Create response.
+
+### ── 1. Create quote ────────────────────────────────────────────────────────
+POST {{baseUrl}}/v1/quotes
+Content-Type: application/json
+
+{
+  "policyHolderName": "Alice Martin",
+  "vehicle": {
+    "year": 2020,
+    "make": "Toyota",
+    "model": "Corolla",
+    "annualKm": 15000
+  },
+  "driver": {
+    "age": 34,
+    "licenceYears": 12,
+    "atFaultClaims": 0
+  }
+}
+
+> {%
+    client.test("201 Created", function() {
+        client.assert(response.status === 201, "Expected 201, got " + response.status);
+    });
+    client.test("Location header present", function() {
+        client.assert(response.headers.valueOf("Location") !== null, "Missing Location header");
+    });
+    client.test("Status is DRAFT", function() {
+        client.assert(response.body.status === "DRAFT", "Expected DRAFT, got " + response.body.status);
+    });
+    client.global.set("quoteId", response.body.id);
+%}
+
+### ── 2. Get quote by ID ────────────────────────────────────────────────────
+GET {{baseUrl}}/v1/quotes/{{quoteId}}
+
+> {%
+    client.test("200 OK", function() {
+        client.assert(response.status === 200, "Expected 200, got " + response.status);
+    });
+    client.test("ID matches", function() {
+        client.assert(response.body.id === client.global.get("quoteId"), "ID mismatch");
+    });
+    client.test("Status is DRAFT", function() {
+        client.assert(response.body.status === "DRAFT", "Expected DRAFT, got " + response.body.status);
+    });
+%}
+
+### ── 3. List all quotes ────────────────────────────────────────────────────
+GET {{baseUrl}}/v1/quotes
+
+> {%
+    client.test("200 OK", function() {
+        client.assert(response.status === 200, "Expected 200, got " + response.status);
+    });
+    client.test("Response is an array", function() {
+        client.assert(Array.isArray(response.body), "Expected array");
+    });
+%}
+
+### ── 3b. List quotes filtered by status ────────────────────────────────────
+GET {{baseUrl}}/v1/quotes?status=DRAFT
+
+> {%
+    client.test("200 OK", function() {
+        client.assert(response.status === 200, "Expected 200, got " + response.status);
+    });
+    client.test("All results are DRAFT", function() {
+        response.body.forEach(function(q) {
+            client.assert(q.status === "DRAFT", "Expected DRAFT, got " + q.status);
+        });
+    });
+%}
+
+### ── 4. Update quote ───────────────────────────────────────────────────────
+PUT {{baseUrl}}/v1/quotes/{{quoteId}}
+Content-Type: application/json
+
+{
+  "policyHolderName": "Alice M. Martin",
+  "vehicle": {
+    "year": 2020,
+    "make": "Toyota",
+    "model": "Corolla",
+    "annualKm": 18000
+  },
+  "driver": {
+    "age": 34,
+    "licenceYears": 12,
+    "atFaultClaims": 1
+  }
+}
+
+> {%
+    client.test("200 OK", function() {
+        client.assert(response.status === 200, "Expected 200, got " + response.status);
+    });
+    client.test("Name was updated", function() {
+        client.assert(response.body.policyHolderName === "Alice M. Martin",
+            "Expected updated name, got " + response.body.policyHolderName);
+    });
+    client.test("Still DRAFT after update", function() {
+        client.assert(response.body.status === "DRAFT", "Expected DRAFT, got " + response.body.status);
+    });
+%}
+
+### ── 5. Rate quote (DRAFT → RATED) ────────────────────────────────────────
+POST {{baseUrl}}/v1/quotes/{{quoteId}}/rate
+
+> {%
+    client.test("202 Accepted", function() {
+        client.assert(response.status === 202, "Expected 202, got " + response.status);
+    });
+    client.test("Status is RATED", function() {
+        client.assert(response.body.status === "RATED", "Expected RATED, got " + response.body.status);
+    });
+%}
+
+### ── 6. Bind quote (RATED → BOUND) ────────────────────────────────────────
+POST {{baseUrl}}/v1/quotes/{{quoteId}}/bind
+
+> {%
+    client.test("200 OK", function() {
+        client.assert(response.status === 200, "Expected 200, got " + response.status);
+    });
+    client.test("Status is BOUND", function() {
+        client.assert(response.body.status === "BOUND", "Expected BOUND, got " + response.body.status);
+    });
+%}
+
+### ── 7. Decline quote ──────────────────────────────────────────────────────
+### Note: creates a fresh quote to decline so the lifecycle above is not affected.
+POST {{baseUrl}}/v1/quotes
+Content-Type: application/json
+
+{
+  "policyHolderName": "Bob Henderson",
+  "vehicle": {
+    "year": 2018,
+    "make": "Honda",
+    "model": "Civic",
+    "annualKm": 22000
+  },
+  "driver": {
+    "age": 27,
+    "licenceYears": 5,
+    "atFaultClaims": 1
+  }
+}
+
+> {%
+    client.global.set("declineQuoteId", response.body.id);
+%}
+
+###
+DELETE {{baseUrl}}/v1/quotes/{{declineQuoteId}}
+
+> {%
+    client.test("204 No Content", function() {
+        client.assert(response.status === 204, "Expected 204, got " + response.status);
+    });
+%}

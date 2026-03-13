@@ -1,5 +1,114 @@
 @baseUrl = http://localhost:8080
 
+### Create quote (DRAFT)
+POST {{baseUrl}}/v1/quotes
+Content-Type: application/json
+
+{
+  "policyHolderName": "Alice Martin",
+  "vehicle": {
+    "year": 2020,
+    "make": "Toyota",
+    "model": "Corolla",
+    "annualKm": 15000
+  },
+  "driver": {
+    "age": 34,
+    "licenceYears": 12,
+    "atFaultClaims": 0
+  }
+}
+
+> {%
+    client.test("Status is 201", function() {
+        client.assert(response.status === 201, "Expected 201 but got " + response.status);
+    });
+    client.test("Status is DRAFT", function() {
+        client.assert(response.body.status === "DRAFT", "Expected DRAFT but got " + response.body.status);
+    });
+    client.global.set("quoteId", response.body.id);
+%}
+
+### Get quote by ID
+GET {{baseUrl}}/v1/quotes/{{quoteId}}
+
+> {%
+    client.test("Status is 200", function() {
+        client.assert(response.status === 200, "Expected 200 but got " + response.status);
+    });
+%}
+
+### List all quotes
+GET {{baseUrl}}/v1/quotes
+
+> {%
+    client.test("Status is 200", function() {
+        client.assert(response.status === 200, "Expected 200 but got " + response.status);
+    });
+    client.test("Response is an array", function() {
+        client.assert(Array.isArray(response.body), "Expected array");
+    });
+%}
+
+### Update quote
+PUT {{baseUrl}}/v1/quotes/{{quoteId}}
+Content-Type: application/json
+
+{
+  "policyHolderName": "Alice M. Martin",
+  "vehicle": {
+    "year": 2020,
+    "make": "Toyota",
+    "model": "Corolla",
+    "annualKm": 18000
+  },
+  "driver": {
+    "age": 34,
+    "licenceYears": 12,
+    "atFaultClaims": 1
+  }
+}
+
+> {%
+    client.test("Status is 200", function() {
+        client.assert(response.status === 200, "Expected 200 but got " + response.status);
+    });
+%}
+
+### Create quote - validation failure (age below minimum)
+POST {{baseUrl}}/v1/quotes
+Content-Type: application/json
+
+{
+  "policyHolderName": "Young Driver",
+  "vehicle": {
+    "year": 2019,
+    "make": "Honda",
+    "model": "Civic",
+    "annualKm": 10000
+  },
+  "driver": {
+    "age": 14,
+    "licenceYears": 0,
+    "atFaultClaims": 0
+  }
+}
+
+> {%
+    client.test("Status is 422", function() {
+        client.assert(response.status === 422, "Expected 422 but got " + response.status);
+    });
+%}
+
+### Get quote - not found
+GET {{baseUrl}}/v1/quotes/00000000-0000-0000-0000-000000000000
+
+> {%
+    client.test("Status is 404", function() {
+        client.assert(response.status === 404, "Expected 404 but got " + response.status);
+    });
+%}
+
 ### Health check
 GET {{baseUrl}}/actuator/health
 

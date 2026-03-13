@@ -1,7 +1,18 @@
 {
   "permissions": {
     "allow": [
-      "Bash(./gradlew test:*)"
+      "Bash(./gradlew test:*)",
+      "Bash(./gradlew compileKotlin 2>&1)",
+      "WebFetch(domain:central.sonatype.com)",
+      "WebFetch(domain:mvnrepository.com)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "Bash(jar tf:*)",
+      "Bash(find ~/.gradle/caches -name \"spring-test-*.jar\" 2>/dev/null | head -3)",
+      "Bash(find build/reports/tests -name \"*.xml\" | xargs grep -l \"QuoteControllerTest\" 2>/dev/null | head -1 | xargs cat 2>/dev/null | grep -E 'testcase|testsuite' | head -40)",
+      "Bash(find build/reports -name \"*.xml\" 2>/dev/null | head -20)",
+      "Bash(find build:*)",
+      "Bash(grep -h 'testsuite\\\\|failures\\\\|errors' build/test-results/test/TEST-com.example.quoteEngine.quote.api.QuoteControllerTest*.xml | grep 'testsuite')"
     ]
   }
 }
