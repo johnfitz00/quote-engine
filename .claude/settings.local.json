@@ -39,7 +39,8 @@
       "Bash(lsof -ti :8080 | xargs kill -9 2>/dev/null; ./gradlew bootRun 2>&1 | grep -E \"Started QuoteEngine|APPLICATION FAILED|ERROR\" | head -5)",
       "Bash(lsof -ti :8080 | xargs kill -9 2>/dev/null; ./gradlew build 2>&1 | tail -8)",
       "Bash(curl -s http://localhost:8080/v1/quotes/65859f0e-2940-4b33-9e36-905535933b97 | python3 -m json.tool | grep -E \"status|grossPremium\")",
-      "Bash(lsof -ti :8080 | xargs kill -9 2>/dev/null; ./gradlew test --tests \"com.example.quoteEngine.rating.infrastructure.RatingConsumerIntegrationTest\" 2>&1 | tail -20)"
+      "Bash(lsof -ti :8080 | xargs kill -9 2>/dev/null; ./gradlew test --tests \"com.example.quoteEngine.rating.infrastructure.RatingConsumerIntegrationTest\" 2>&1 | tail -20)",
+      "Bash(git rm:*)"
     ]
   }
 }

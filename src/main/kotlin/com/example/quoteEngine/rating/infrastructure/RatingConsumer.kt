@@ -32,6 +32,11 @@ class RatingConsumer(
             val quote = quoteRepository.findById(quoteId)
                 .orElseThrow { QuoteNotFoundException(quoteId) }
 
+            if (quote.status != QuoteStatus.RATING_IN_PROGRESS) {
+                log.warn("Quote {} already processed (status={}), skipping", quoteId, quote.status)
+                return
+            }
+
             val ratingResult = ratingEngine.calculatePremium(event.ratingRequest)
 
             quote.ratingResult = ratingResult
