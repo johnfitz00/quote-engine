@@ -33,7 +33,10 @@ class QuoteEventPublisher(
                 if (ex != null) {
                     log.error(
                         "Failed to publish {} to topic={} key={}: {}",
-                        event.eventType, event.topic, key, ex.message,
+                        event.eventType,
+                        event.topic,
+                        key,
+                        ex.message,
                     )
                 } else {
                     log.debug("Published {} to topic={} key={}", event.eventType, event.topic, key)
