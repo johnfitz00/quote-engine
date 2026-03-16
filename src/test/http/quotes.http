@@ -18,7 +18,8 @@ Content-Type: application/json
     "age": 34,
     "licenceYears": 12,
     "atFaultClaims": 0
-  }
+  },
+  "state": "NSW"
 }
 
 > {%

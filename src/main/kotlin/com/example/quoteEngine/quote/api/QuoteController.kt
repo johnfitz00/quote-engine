@@ -50,8 +50,14 @@ class QuoteController(private val quoteService: QuoteService) {
         ResponseEntity.ok(quoteService.updateQuote(id, request))
 
     @PostMapping("/{id}/rate")
-    fun rate(@PathVariable id: UUID): ResponseEntity<QuoteResponse> =
-        ResponseEntity.status(HttpStatus.ACCEPTED).body(quoteService.rateQuote(id))
+    fun rate(
+        @PathVariable id: UUID,
+        uriBuilder: UriComponentsBuilder
+    ): ResponseEntity<QuoteResponse> {
+        val response = quoteService.rateQuote(id)
+        val location = uriBuilder.path("/v1/quotes/{id}").buildAndExpand(id).toUri()
+        return ResponseEntity.accepted().location(location).body(response)
+    }
 
     @PostMapping("/{id}/bind")
     fun bind(@PathVariable id: UUID): ResponseEntity<QuoteResponse> =

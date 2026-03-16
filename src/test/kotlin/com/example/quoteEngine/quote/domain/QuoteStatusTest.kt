@@ -8,8 +8,8 @@ class QuoteStatusTest {
 
     // DRAFT transitions
     @Test
-    fun `DRAFT can transition to RATED`() {
-        assertTrue(QuoteStatus.DRAFT.canTransitionTo(QuoteStatus.RATED))
+    fun `DRAFT can transition to RATING_IN_PROGRESS`() {
+        assertTrue(QuoteStatus.DRAFT.canTransitionTo(QuoteStatus.RATING_IN_PROGRESS))
     }
 
     @Test

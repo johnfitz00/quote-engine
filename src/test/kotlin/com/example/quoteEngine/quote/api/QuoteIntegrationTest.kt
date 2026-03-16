@@ -54,32 +54,28 @@ class QuoteIntegrationTest {
             jsonPath("$.vehicle.make") { value("Toyota") }
         }
 
-        // 3. POST /rate transitions to RATED
+        // 3. POST /rate transitions to RATING_IN_PROGRESS (async — consumer completes it)
         mockMvc.post("$BASE_URL/$id/rate").andExpect {
             status { isAccepted() }
-            jsonPath("$.status") { value("RATED") }
+            jsonPath("$.status") { value("RATING_IN_PROGRESS") }
         }
 
         // 4. GET confirms the persisted status change
         mockMvc.get("$BASE_URL/$id").andExpect {
             status { isOk() }
-            jsonPath("$.status") { value("RATED") }
+            jsonPath("$.status") { value("RATING_IN_PROGRESS") }
         }
     }
 
     @Test
-    fun `full bind flow - create, rate, bind`() {
+    fun `full bind flow - create, rate`() {
         val id = createQuoteAndExtractId()
 
         mockMvc.post("$BASE_URL/$id/rate").andExpect {
             status { isAccepted() }
-            jsonPath("$.status") { value("RATED") }
+            jsonPath("$.status") { value("RATING_IN_PROGRESS") }
         }
 
-        mockMvc.post("$BASE_URL/$id/bind").andExpect {
-            status { isOk() }
-            jsonPath("$.status") { value("BOUND") }
-        }
     }
 
     // --- List ---
@@ -97,13 +93,13 @@ class QuoteIntegrationTest {
     @Test
     fun `list filtered by status returns only matching quotes`() {
         val id = createQuoteAndExtractId()
-        mockMvc.post("$BASE_URL/$id/rate")   // DRAFT → RATED
+        mockMvc.post("$BASE_URL/$id/rate")   // DRAFT → RATING_IN_PROGRESS
         createQuoteAndExtractId()            // second stays DRAFT
 
-        mockMvc.get(BASE_URL) { param("status", "RATED") }.andExpect {
+        mockMvc.get(BASE_URL) { param("status", "RATING_IN_PROGRESS") }.andExpect {
             status { isOk() }
             jsonPath("$.length()") { value(1) }
-            jsonPath("$[0].status") { value("RATED") }
+            jsonPath("$[0].status") { value("RATING_IN_PROGRESS") }
         }
 
         mockMvc.get(BASE_URL) { param("status", "DRAFT") }.andExpect {
@@ -172,14 +168,14 @@ class QuoteIntegrationTest {
     @Test
     fun `update non-DRAFT quote returns 409`() {
         val id = createQuoteAndExtractId()
-        mockMvc.post("$BASE_URL/$id/rate")  // DRAFT → RATED
+        mockMvc.post("$BASE_URL/$id/rate")  // DRAFT → RATING_IN_PROGRESS
 
         mockMvc.put("$BASE_URL/$id") {
             contentType = MediaType.APPLICATION_JSON
             content = validUpdateJson("Bob Smith")
         }.andExpect {
             status { isConflict() }
-            jsonPath("$.message") { value("Cannot edit a RATED quote — only DRAFT quotes can be updated") }
+            jsonPath("$.message") { value("Cannot edit a RATING_IN_PROGRESS quote — only DRAFT quotes can be updated") }
         }
     }
 

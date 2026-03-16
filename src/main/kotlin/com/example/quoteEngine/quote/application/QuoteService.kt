@@ -7,8 +7,9 @@ import com.example.quoteEngine.quote.domain.InvalidTransitionException
 import com.example.quoteEngine.quote.domain.Quote
 import com.example.quoteEngine.quote.domain.QuoteNotFoundException
 import com.example.quoteEngine.quote.domain.QuoteStatus
+import com.example.quoteEngine.quote.domain.QuoteRatingRequested
+import com.example.quoteEngine.quote.infrastructure.QuoteEventPublisher
 import com.example.quoteEngine.quote.infrastructure.QuoteRepository
-import com.example.quoteEngine.rating.application.RatingEngine
 import com.example.quoteEngine.rating.domain.RatingRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -19,7 +20,7 @@ import java.util.UUID
 class QuoteService(
     private val quoteRepository: QuoteRepository,
     private val quoteMapper: QuoteMapper,
-    private val ratingEngine: RatingEngine,
+    private val eventPublisher: QuoteEventPublisher,
 ) {
 
     @Transactional
@@ -56,20 +57,21 @@ class QuoteService(
     @Transactional
     fun rateQuote(id: UUID): QuoteResponse {
         val quote = quoteRepository.findById(id).orElseThrow { QuoteNotFoundException(id) }
-        if (!quote.status.canTransitionTo(QuoteStatus.RATED)) {
-            throw InvalidTransitionException(quote.status, QuoteStatus.RATED)
+        if (!quote.status.canTransitionTo(QuoteStatus.RATING_IN_PROGRESS)) {
+            throw InvalidTransitionException(quote.status, QuoteStatus.RATING_IN_PROGRESS)
         }
         val state = quote.state
             ?: throw IllegalStateException("Quote $id has no state — update the quote before rating")
-        val request = RatingRequest(
+        val ratingRequest = RatingRequest(
             vehicle = quote.vehicle!!,
             driver = quote.driver!!,
             state = state,
             effectiveDate = LocalDate.now()
         )
-        quote.ratingResult = ratingEngine.calculatePremium(request)
-        quote.status = QuoteStatus.RATED
-        return quoteMapper.toResponse(quoteRepository.saveAndFlush(quote))
+        quote.status = QuoteStatus.RATING_IN_PROGRESS
+        val saved = quoteRepository.saveAndFlush(quote)
+        eventPublisher.publish(QuoteRatingRequested(id, ratingRequest))
+        return quoteMapper.toResponse(saved)
     }
 
     @Transactional
