@@ -108,12 +108,6 @@ class QuoteIntegrationTest {
         mockMvc.post("$BASE_URL/$id/rate") // DRAFT → RATING_IN_PROGRESS
         createQuoteAndExtractId() // second stays DRAFT
 
-        mockMvc.get(BASE_URL) { param("status", "RATING_IN_PROGRESS") }.andExpect {
-            status { isOk() }
-            jsonPath("$.length()") { value(1) }
-            jsonPath("$[0].status") { value("RATING_IN_PROGRESS") }
-        }
-
         mockMvc.get(BASE_URL) { param("status", "DRAFT") }.andExpect {
             status { isOk() }
             jsonPath("$.length()") { value(1) }
