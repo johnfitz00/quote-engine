@@ -1,0 +1,90 @@
+# Motor rates — two versions to demonstrate temporal loading
+# effectiveTo omitted on the current version (open-ended)
+#
+# Factor semantics
+#   AGE         — driver age in years
+#   VEHICLE_AGE — age of vehicle in years (current year - manufacture year)
+#   USAGE       — annual kilometres driven
+#   CLAIMS      — at-fault claims in past 3 years
+#   NCB         — years of continuous no-claims bonus
+
+versions:
+
+  # ── Rate version 1: 2024 ─────────────────────────────────────────────────
+  - effectiveFrom: "2024-01-01"
+    effectiveTo: "2024-12-31"
+    factors:
+
+      - type: AGE
+        bands:
+          - { bandStart: 17,  bandEnd: 24,    factorValue: 1.85 }   # young driver surcharge
+          - { bandStart: 25,  bandEnd: 39,    factorValue: 1.00 }   # base
+          - { bandStart: 40,  bandEnd: 65,    factorValue: 0.92 }   # mature driver discount
+          - { bandStart: 66,  bandEnd: 99,    factorValue: 1.20 }   # older driver loading
+
+      - type: VEHICLE_AGE
+        bands:
+          - { bandStart: 0,   bandEnd: 3,     factorValue: 1.25 }   # new — higher repair cost
+          - { bandStart: 4,   bandEnd: 8,     factorValue: 1.00 }   # base
+          - { bandStart: 9,   bandEnd: 15,    factorValue: 0.82 }   # depreciated value
+          - { bandStart: 16,  bandEnd: 30,    factorValue: 0.68 }   # agreed-value territory
+
+      - type: USAGE
+        bands:
+          - { bandStart: 0,     bandEnd: 10000,  factorValue: 0.88 }  # low usage
+          - { bandStart: 10001, bandEnd: 20000,  factorValue: 1.00 }  # base
+          - { bandStart: 20001, bandEnd: 30000,  factorValue: 1.18 }  # high usage
+          - { bandStart: 30001, bandEnd: 99999,  factorValue: 1.35 }  # fleet-level usage
+
+      - type: CLAIMS
+        bands:
+          - { bandStart: 0, bandEnd: 0, factorValue: 1.00 }   # clean record
+          - { bandStart: 1, bandEnd: 1, factorValue: 1.35 }   # one claim
+          - { bandStart: 2, bandEnd: 2, factorValue: 1.70 }   # two claims
+          - { bandStart: 3, bandEnd: 9, factorValue: 2.20 }   # three or more
+
+      - type: NCB
+        bands:
+          - { bandStart: 0, bandEnd: 0,  factorValue: 1.00 }  # no bonus
+          - { bandStart: 1, bandEnd: 2,  factorValue: 0.85 }  # 15% discount
+          - { bandStart: 3, bandEnd: 4,  factorValue: 0.75 }  # 25% discount
+          - { bandStart: 5, bandEnd: 20, factorValue: 0.60 }  # 40% discount (max)
+
+  # ── Rate version 2: 2025 — moderate across-the-board increases ───────────
+  - effectiveFrom: "2025-01-01"
+    factors:
+
+      - type: AGE
+        bands:
+          - { bandStart: 17,  bandEnd: 24,    factorValue: 1.90 }
+          - { bandStart: 25,  bandEnd: 39,    factorValue: 1.00 }
+          - { bandStart: 40,  bandEnd: 65,    factorValue: 0.90 }
+          - { bandStart: 66,  bandEnd: 99,    factorValue: 1.25 }
+
+      - type: VEHICLE_AGE
+        bands:
+          - { bandStart: 0,   bandEnd: 3,     factorValue: 1.30 }
+          - { bandStart: 4,   bandEnd: 8,     factorValue: 1.00 }
+          - { bandStart: 9,   bandEnd: 15,    factorValue: 0.80 }
+          - { bandStart: 16,  bandEnd: 30,    factorValue: 0.65 }
+
+      - type: USAGE
+        bands:
+          - { bandStart: 0,     bandEnd: 10000,  factorValue: 0.88 }
+          - { bandStart: 10001, bandEnd: 20000,  factorValue: 1.00 }
+          - { bandStart: 20001, bandEnd: 30000,  factorValue: 1.20 }
+          - { bandStart: 30001, bandEnd: 99999,  factorValue: 1.40 }
+
+      - type: CLAIMS
+        bands:
+          - { bandStart: 0, bandEnd: 0, factorValue: 1.00 }
+          - { bandStart: 1, bandEnd: 1, factorValue: 1.40 }
+          - { bandStart: 2, bandEnd: 2, factorValue: 1.78 }
+          - { bandStart: 3, bandEnd: 9, factorValue: 2.30 }
+
+      - type: NCB
+        bands:
+          - { bandStart: 0, bandEnd: 0,  factorValue: 1.00 }
+          - { bandStart: 1, bandEnd: 2,  factorValue: 0.85 }
+          - { bandStart: 3, bandEnd: 4,  factorValue: 0.75 }
+          - { bandStart: 5, bandEnd: 20, factorValue: 0.60 }
