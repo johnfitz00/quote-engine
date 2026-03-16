@@ -26,16 +26,16 @@ import kotlin.test.assertTrue
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 class RatingVersioningTest {
-
     @Autowired
     lateinit var engine: RatingEngine
 
-    private fun requestFor(effectiveDate: LocalDate) = RatingRequest(
-        vehicle = Vehicle(year = 2020, make = "Toyota", model = "Camry", annualKm = 15000),
-        driver  = Driver(age = 19, licenceYears = 0, atFaultClaims = 0),
-        state   = "NSW",
-        effectiveDate = effectiveDate,
-    )
+    private fun requestFor(effectiveDate: LocalDate) =
+        RatingRequest(
+            vehicle = Vehicle(year = 2020, make = "Toyota", model = "Camry", annualKm = 15000),
+            driver = Driver(age = 19, licenceYears = 0, atFaultClaims = 0),
+            state = "NSW",
+            effectiveDate = effectiveDate,
+        )
 
     @Test
     fun `effectiveDate in 2024 uses rate version 1 - AGE factor is 1_85`() {
@@ -62,6 +62,7 @@ class RatingVersioningTest {
 
         assertTrue(
             v2.grossPremium.amount > v1.grossPremium.amount,
-            "Expected v2 gross ${v2.grossPremium.amount} > v1 gross ${v1.grossPremium.amount}")
+            "Expected v2 gross ${v2.grossPremium.amount} > v1 gross ${v1.grossPremium.amount}",
+        )
     }
 }

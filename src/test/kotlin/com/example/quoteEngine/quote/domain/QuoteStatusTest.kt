@@ -5,7 +5,6 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class QuoteStatusTest {
-
     // DRAFT transitions
     @Test
     fun `DRAFT can transition to RATING_IN_PROGRESS`() {

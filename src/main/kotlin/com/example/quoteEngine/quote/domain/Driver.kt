@@ -6,5 +6,5 @@ import jakarta.persistence.Embeddable
 data class Driver(
     val age: Int,
     val licenceYears: Int,
-    val atFaultClaims: Int
+    val atFaultClaims: Int,
 )

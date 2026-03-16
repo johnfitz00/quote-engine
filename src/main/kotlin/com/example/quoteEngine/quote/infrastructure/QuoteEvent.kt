@@ -16,5 +16,5 @@ class QuoteEvent(
     val eventType: String,
     @Column(columnDefinition = "TEXT")
     val eventData: String,
-    val occurredAt: Instant
+    val occurredAt: Instant,
 )

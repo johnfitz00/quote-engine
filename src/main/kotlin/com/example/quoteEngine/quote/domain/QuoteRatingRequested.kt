@@ -6,11 +6,11 @@ import java.util.UUID
 
 data class QuoteRatingRequested(
     val quoteId: UUID,
-    val ratingRequest: RatingRequest
+    val ratingRequest: RatingRequest,
 ) : DomainEvent(
-    aggregateId = quoteId,
-    aggregateType = "Quote",
-    eventType = "QuoteRatingRequested"
-) {
+        aggregateId = quoteId,
+        aggregateType = "Quote",
+        eventType = "QuoteRatingRequested",
+    ) {
     override val topic = "quote.rating"
 }

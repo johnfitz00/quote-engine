@@ -9,5 +9,5 @@ data class Vehicle(
     val year: Int,
     val make: String,
     val model: String,
-    val annualKm: Int
+    val annualKm: Int,
 )

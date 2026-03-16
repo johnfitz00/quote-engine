@@ -22,7 +22,6 @@ class KafkaConfig(
     @Value("\${spring.kafka.consumer.group-id}") private val groupId: String,
     @Value("\${spring.kafka.consumer.auto-offset-reset}") private val autoOffsetReset: String,
 ) {
-
     @Bean
     fun producerFactory(): ProducerFactory<String, String> =
         DefaultKafkaProducerFactory(
@@ -30,7 +29,7 @@ class KafkaConfig(
                 ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to bootstrapServers,
                 ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java,
                 ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java,
-            )
+            ),
         )
 
     @Bean
@@ -45,7 +44,7 @@ class KafkaConfig(
                 ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to autoOffsetReset,
                 ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java,
                 ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java,
-            )
+            ),
         )
 
     @Bean

@@ -13,20 +13,20 @@ data class QuoteResponse(
     val status: String,
     val ratingResult: RatingResultResponse?,
     val createdAt: Instant,
-    val updatedAt: Instant
+    val updatedAt: Instant,
 )
 
 data class VehicleResponse(
     val year: Int,
     val make: String,
     val model: String,
-    val annualKm: Int
+    val annualKm: Int,
 )
 
 data class DriverResponse(
     val age: Int,
     val licenceYears: Int,
-    val atFaultClaims: Int
+    val atFaultClaims: Int,
 )
 
 data class RatingResultResponse(
@@ -35,16 +35,16 @@ data class RatingResultResponse(
     val technicalPremium: MoneyResponse,
     val levies: MoneyResponse,
     val stampDuty: MoneyResponse,
-    val grossPremium: MoneyResponse
+    val grossPremium: MoneyResponse,
 )
 
 data class AppliedFactorResponse(
     val name: String,
     val factor: BigDecimal,
-    val impactAmount: MoneyResponse
+    val impactAmount: MoneyResponse,
 )
 
 data class MoneyResponse(
     val amount: BigDecimal,
-    val currency: String
+    val currency: String,
 )

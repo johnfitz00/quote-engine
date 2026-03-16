@@ -7,5 +7,5 @@ import org.springframework.boot.runApplication
 class QuoteEngineApplication
 
 fun main(args: Array<String>) {
-	runApplication<QuoteEngineApplication>(*args)
+    runApplication<QuoteEngineApplication>(*args)
 }

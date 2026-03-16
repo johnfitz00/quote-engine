@@ -12,7 +12,6 @@ import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager
 
 @DataJpaTest
 class QuoteRepositoryTest {
-
     @Autowired
     lateinit var quoteRepository: QuoteRepository
 
@@ -51,7 +50,10 @@ class QuoteRepositoryTest {
         assertThat(found.updatedAt).isNotNull()
     }
 
-    private fun quote(name: String, status: QuoteStatus) = Quote().apply {
+    private fun quote(
+        name: String,
+        status: QuoteStatus,
+    ) = Quote().apply {
         policyHolderName = name
         vehicle = Vehicle(year = 2020, make = "Toyota", model = "Corolla", annualKm = 15000)
         driver = Driver(age = 34, licenceYears = 12, atFaultClaims = 0)

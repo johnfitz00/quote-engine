@@ -16,8 +16,8 @@ import org.springframework.test.web.servlet.put
 @SpringBootTest
 @AutoConfigureMockMvc
 class QuoteIntegrationTest {
-
     @Autowired lateinit var mockMvc: MockMvc
+
     @Autowired lateinit var quoteRepository: QuoteRepository
 
     companion object {
@@ -34,14 +34,18 @@ class QuoteIntegrationTest {
     @Test
     fun `full lifecycle - create, retrieve, rate, confirm status`() {
         // 1. POST creates a quote in DRAFT status
-        val location = mockMvc.post(BASE_URL) {
-            contentType = MediaType.APPLICATION_JSON
-            content = validCreateJson()
-        }.andExpect {
-            status { isCreated() }
-            jsonPath("$.status") { value("DRAFT") }
-            jsonPath("$.policyHolderName") { value("Alice Martin") }
-        }.andReturn().response.getHeader("Location")!!
+        val location =
+            mockMvc
+                .post(BASE_URL) {
+                    contentType = MediaType.APPLICATION_JSON
+                    content = validCreateJson()
+                }.andExpect {
+                    status { isCreated() }
+                    jsonPath("$.status") { value("DRAFT") }
+                    jsonPath("$.policyHolderName") { value("Alice Martin") }
+                }.andReturn()
+                .response
+                .getHeader("Location")!!
 
         val id = location.substringAfterLast("/")
 
@@ -75,7 +79,6 @@ class QuoteIntegrationTest {
             status { isAccepted() }
             jsonPath("$.status") { value("RATING_IN_PROGRESS") }
         }
-
     }
 
     // --- List ---
@@ -93,8 +96,8 @@ class QuoteIntegrationTest {
     @Test
     fun `list filtered by status returns only matching quotes`() {
         val id = createQuoteAndExtractId()
-        mockMvc.post("$BASE_URL/$id/rate")   // DRAFT → RATING_IN_PROGRESS
-        createQuoteAndExtractId()            // second stays DRAFT
+        mockMvc.post("$BASE_URL/$id/rate") // DRAFT → RATING_IN_PROGRESS
+        createQuoteAndExtractId() // second stays DRAFT
 
         mockMvc.get(BASE_URL) { param("status", "RATING_IN_PROGRESS") }.andExpect {
             status { isOk() }
@@ -114,13 +117,14 @@ class QuoteIntegrationTest {
     fun `update persists changes to a DRAFT quote`() {
         val id = createQuoteAndExtractId()
 
-        mockMvc.put("$BASE_URL/$id") {
-            contentType = MediaType.APPLICATION_JSON
-            content = validUpdateJson("Bob Smith")
-        }.andExpect {
-            status { isOk() }
-            jsonPath("$.policyHolderName") { value("Bob Smith") }
-        }
+        mockMvc
+            .put("$BASE_URL/$id") {
+                contentType = MediaType.APPLICATION_JSON
+                content = validUpdateJson("Bob Smith")
+            }.andExpect {
+                status { isOk() }
+                jsonPath("$.policyHolderName") { value("Bob Smith") }
+            }
 
         mockMvc.get("$BASE_URL/$id").andExpect {
             status { isOk() }
@@ -168,42 +172,49 @@ class QuoteIntegrationTest {
     @Test
     fun `update non-DRAFT quote returns 409`() {
         val id = createQuoteAndExtractId()
-        mockMvc.post("$BASE_URL/$id/rate")  // DRAFT → RATING_IN_PROGRESS
+        mockMvc.post("$BASE_URL/$id/rate") // DRAFT → RATING_IN_PROGRESS
 
-        mockMvc.put("$BASE_URL/$id") {
-            contentType = MediaType.APPLICATION_JSON
-            content = validUpdateJson("Bob Smith")
-        }.andExpect {
-            status { isConflict() }
-            jsonPath("$.message") { value("Cannot edit a RATING_IN_PROGRESS quote — only DRAFT quotes can be updated") }
-        }
+        mockMvc
+            .put("$BASE_URL/$id") {
+                contentType = MediaType.APPLICATION_JSON
+                content = validUpdateJson("Bob Smith")
+            }.andExpect {
+                status { isConflict() }
+                jsonPath("$.message") { value("Cannot edit a RATING_IN_PROGRESS quote — only DRAFT quotes can be updated") }
+            }
     }
 
     // --- Helpers ---
 
     private fun createQuoteAndExtractId(): String {
-        val location = mockMvc.post(BASE_URL) {
-            contentType = MediaType.APPLICATION_JSON
-            content = validCreateJson()
-        }.andReturn().response.getHeader("Location")!!
+        val location =
+            mockMvc
+                .post(BASE_URL) {
+                    contentType = MediaType.APPLICATION_JSON
+                    content = validCreateJson()
+                }.andReturn()
+                .response
+                .getHeader("Location")!!
         return location.substringAfterLast("/")
     }
 
-    private fun validCreateJson() = """
+    private fun validCreateJson() =
+        """
         {
           "policyHolderName": "Alice Martin",
           "state": "NSW",
           "vehicle": { "year": 2020, "make": "Toyota", "model": "Corolla", "annualKm": 15000 },
           "driver": { "age": 34, "licenceYears": 12, "atFaultClaims": 0 }
         }
-    """.trimIndent()
+        """.trimIndent()
 
-    private fun validUpdateJson(name: String) = """
+    private fun validUpdateJson(name: String) =
+        """
         {
           "policyHolderName": "$name",
           "state": "NSW",
           "vehicle": { "year": 2020, "make": "Toyota", "model": "Corolla", "annualKm": 15000 },
           "driver": { "age": 34, "licenceYears": 12, "atFaultClaims": 0 }
         }
-    """.trimIndent()
+        """.trimIndent()
 }

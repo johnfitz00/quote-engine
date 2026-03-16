@@ -12,24 +12,30 @@ import java.time.LocalDate
 
 @Component
 class RatingDataLoader {
-
     private val log = LoggerFactory.getLogger(javaClass)
     private lateinit var rates: List<RatingTable>
 
     @PostConstruct
     fun load() {
         val resource = ClassPathResource("rates/motor-rates.yml")
+
         @Suppress("UNCHECKED_CAST")
         val root = Yaml().load<Map<String, Any>>(resource.inputStream)
         rates = buildEntries(root)
         log.info("Loaded ${rates.size} rate entries from motor-rates.yml")
     }
 
-    fun findApplicable(type: FactorType, value: BigDecimal, date: LocalDate): List<RatingTable> =
+    fun findApplicable(
+        type: FactorType,
+        value: BigDecimal,
+        date: LocalDate,
+    ): List<RatingTable> =
         rates.filter { row ->
             row.factorType == type &&
-            value >= row.bandStart && value <= row.bandEnd &&
-            date >= row.effectiveFrom && (row.effectiveTo == null || date <= row.effectiveTo)
+                value >= row.bandStart &&
+                value <= row.bandEnd &&
+                date >= row.effectiveFrom &&
+                (row.effectiveTo == null || date <= row.effectiveTo)
         }
 
     @Suppress("UNCHECKED_CAST")
@@ -53,12 +59,12 @@ class RatingDataLoader {
         effectiveFrom: LocalDate,
         effectiveTo: LocalDate?,
     ) = RatingTable(
-        factorType    = type,
+        factorType = type,
         // YAML parses integers as Int and decimals as Double — BigDecimal via toString is safe for both
-        bandStart     = BigDecimal(band["bandStart"].toString()),
-        bandEnd       = BigDecimal(band["bandEnd"].toString()),
-        factorValue   = BigDecimal(band["factorValue"].toString()),
+        bandStart = BigDecimal(band["bandStart"].toString()),
+        bandEnd = BigDecimal(band["bandEnd"].toString()),
+        factorValue = BigDecimal(band["factorValue"].toString()),
         effectiveFrom = effectiveFrom,
-        effectiveTo   = effectiveTo,
+        effectiveTo = effectiveTo,
     )
 }

@@ -5,11 +5,11 @@ import java.util.UUID
 
 data class QuoteExpired(
     val quoteId: UUID,
-    val finalStatus: QuoteStatus
+    val finalStatus: QuoteStatus,
 ) : DomainEvent(
-    aggregateId = quoteId,
-    aggregateType = "Quote",
-    eventType = "QuoteExpired"
-) {
+        aggregateId = quoteId,
+        aggregateType = "Quote",
+        eventType = "QuoteExpired",
+    ) {
     override val topic = "quote.expired"
 }

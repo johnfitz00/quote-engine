@@ -27,9 +27,10 @@ import kotlin.test.assertNotNull
 @TestPropertySource(properties = ["spring.kafka.bootstrap-servers=\${spring.embedded.kafka.brokers}"])
 @DirtiesContext
 class RatingConsumerIntegrationTest {
-
     @Autowired lateinit var quoteRepository: QuoteRepository
+
     @Autowired lateinit var kafkaTemplate: KafkaTemplate<String, String>
+
     @Autowired lateinit var objectMapper: ObjectMapper
 
     @BeforeEach
@@ -40,25 +41,28 @@ class RatingConsumerIntegrationTest {
     @Test
     fun `quote transitions to RATED after QuoteRatingRequested is consumed`() {
         // Arrange — quote is already in RATING_IN_PROGRESS (set by the /rate endpoint)
-        val quote = Quote().apply {
-            status = QuoteStatus.RATING_IN_PROGRESS
-            policyHolderName = "Alice Martin"
-            state = "NSW"
-            vehicle = Vehicle(year = 2020, make = "Toyota", model = "Corolla", annualKm = 15000)
-            driver = Driver(age = 34, licenceYears = 12, atFaultClaims = 0)
-        }
+        val quote =
+            Quote().apply {
+                status = QuoteStatus.RATING_IN_PROGRESS
+                policyHolderName = "Alice Martin"
+                state = "NSW"
+                vehicle = Vehicle(year = 2020, make = "Toyota", model = "Corolla", annualKm = 15000)
+                driver = Driver(age = 34, licenceYears = 12, atFaultClaims = 0)
+            }
         quoteRepository.saveAndFlush(quote)
         val quoteId = quote.id!!
 
-        val event = QuoteRatingRequested(
-            quoteId = quoteId,
-            ratingRequest = RatingRequest(
-                vehicle = quote.vehicle!!,
-                driver = quote.driver!!,
-                state = "NSW",
-                effectiveDate = LocalDate.now(),
+        val event =
+            QuoteRatingRequested(
+                quoteId = quoteId,
+                ratingRequest =
+                    RatingRequest(
+                        vehicle = quote.vehicle!!,
+                        driver = quote.driver!!,
+                        state = "NSW",
+                        effectiveDate = LocalDate.now(),
+                    ),
             )
-        )
 
         // Act — publish the event as the /rate endpoint would
         kafkaTemplate.send("quote.rating", quoteId.toString(), objectMapper.writeValueAsString(event))

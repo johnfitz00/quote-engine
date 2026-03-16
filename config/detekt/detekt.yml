@@ -1,0 +1,31 @@
+build:
+  maxIssues: 0
+
+complexity:
+  active: true
+  LongMethod:
+    threshold: 60
+  LongParameterList:
+    functionThreshold: 8
+    constructorThreshold: 8
+  TooManyFunctions:
+    thresholdInFiles: 20
+    thresholdInClasses: 15
+
+naming:
+  active: true
+
+style:
+  active: true
+  MagicNumber:
+    active: false  # too noisy for domain models
+  WildcardImport:
+    active: true
+
+exceptions:
+  active: true
+  TooGenericExceptionCaught:
+    active: false  # Kafka consumer intentionally catches Exception
+
+comments:
+  active: false

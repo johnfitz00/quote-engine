@@ -7,5 +7,6 @@ import java.util.UUID
 
 interface QuoteRepository : JpaRepository<Quote, UUID> {
     fun findByStatus(status: QuoteStatus): List<Quote>
+
     fun findByPolicyHolderNameContaining(name: String): List<Quote>
 }

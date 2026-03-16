@@ -1,3 +1,5 @@
 package com.example.quoteEngine.rating.domain
 
-class RatingException(message: String) : RuntimeException(message)
+class RatingException(
+    message: String,
+) : RuntimeException(message)

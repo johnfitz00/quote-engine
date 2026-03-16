@@ -33,6 +33,7 @@ class Quote {
 
     @CreationTimestamp
     var createdAt: Instant? = null
+
     @UpdateTimestamp
     var updatedAt: Instant? = null
 }

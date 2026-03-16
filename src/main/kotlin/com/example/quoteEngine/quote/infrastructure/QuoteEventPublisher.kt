@@ -24,10 +24,11 @@ class QuoteEventPublisher(
                 eventType = event.eventType,
                 eventData = payload,
                 occurredAt = event.occurredAt,
-            )
+            ),
         )
 
-        kafka.send(event.topic, key, payload)
+        kafka
+            .send(event.topic, key, payload)
             .whenComplete { _, ex ->
                 if (ex != null) {
                     log.error("Failed to publish {} to topic={} key={}: {}", event.eventType, event.topic, key, ex.message)

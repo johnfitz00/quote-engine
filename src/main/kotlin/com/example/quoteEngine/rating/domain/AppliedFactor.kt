@@ -6,5 +6,5 @@ import java.math.BigDecimal
 data class AppliedFactor(
     val name: String,
     val factor: BigDecimal,
-    val impactAmount: Money
+    val impactAmount: Money,
 )

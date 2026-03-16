@@ -4,11 +4,11 @@ import com.example.quoteEngine.shared.events.DomainEvent
 import java.util.UUID
 
 data class QuoteBound(
-    val quoteId: UUID
+    val quoteId: UUID,
 ) : DomainEvent(
-    aggregateId = quoteId,
-    aggregateType = "Quote",
-    eventType = "QuoteBound"
-) {
+        aggregateId = quoteId,
+        aggregateType = "Quote",
+        eventType = "QuoteBound",
+    ) {
     override val topic = "quote.bound"
 }

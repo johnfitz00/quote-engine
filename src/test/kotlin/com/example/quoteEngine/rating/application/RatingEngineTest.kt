@@ -15,7 +15,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class RatingEngineTest {
-
     private val rateLoader = mockk<RatingDataLoader>()
     private val engine = RatingEngine(rateLoader)
 
@@ -24,38 +23,39 @@ class RatingEngineTest {
 
     // ── Helpers ───────────────────────────────────────────────────────────
 
-    private fun row(factor: String) = RatingTable(
-        factorType    = FactorType.AGE,   // type field unused in assertions; any value works
-        bandStart     = BigDecimal.ZERO,
-        bandEnd       = BigDecimal("999"),
-        factorValue   = BigDecimal(factor),
-        effectiveFrom = baseDate,
-    )
+    private fun row(factor: String) =
+        RatingTable(
+            factorType = FactorType.AGE, // type field unused in assertions; any value works
+            bandStart = BigDecimal.ZERO,
+            bandEnd = BigDecimal("999"),
+            factorValue = BigDecimal(factor),
+            effectiveFrom = baseDate,
+        )
 
     /** Stubs all five factor lookups; override individual factors under test. */
     private fun stubFactors(
-        age: String        = "1.00",
+        age: String = "1.00",
         vehicleAge: String = "1.00",
-        usage: String      = "1.00",
-        claims: String     = "1.00",
-        ncb: String        = "1.00",
+        usage: String = "1.00",
+        claims: String = "1.00",
+        ncb: String = "1.00",
     ) {
-        every { rateLoader.findApplicable(FactorType.AGE,         any(), any()) } returns listOf(row(age))
+        every { rateLoader.findApplicable(FactorType.AGE, any(), any()) } returns listOf(row(age))
         every { rateLoader.findApplicable(FactorType.VEHICLE_AGE, any(), any()) } returns listOf(row(vehicleAge))
-        every { rateLoader.findApplicable(FactorType.USAGE,       any(), any()) } returns listOf(row(usage))
-        every { rateLoader.findApplicable(FactorType.CLAIMS,      any(), any()) } returns listOf(row(claims))
-        every { rateLoader.findApplicable(FactorType.NCB,         any(), any()) } returns listOf(row(ncb))
+        every { rateLoader.findApplicable(FactorType.USAGE, any(), any()) } returns listOf(row(usage))
+        every { rateLoader.findApplicable(FactorType.CLAIMS, any(), any()) } returns listOf(row(claims))
+        every { rateLoader.findApplicable(FactorType.NCB, any(), any()) } returns listOf(row(ncb))
     }
 
     private fun request(
-        age: Int          = 35,
+        age: Int = 35,
         licenceYears: Int = 10,
-        claims: Int       = 0,
-        annualKm: Int     = 15000,
+        claims: Int = 0,
+        annualKm: Int = 15000,
     ) = RatingRequest(
         vehicle = baseVehicle.copy(annualKm = annualKm),
-        driver  = Driver(age = age, licenceYears = licenceYears, atFaultClaims = claims),
-        state   = "NSW",
+        driver = Driver(age = age, licenceYears = licenceYears, atFaultClaims = claims),
+        state = "NSW",
         effectiveDate = baseDate,
     )
 
@@ -69,8 +69,10 @@ class RatingEngineTest {
         stubFactors(age = "0.90")
         val experiencedPremium = engine.calculatePremium(request(age = 45)).grossPremium.amount
 
-        assertTrue(youngPremium.compareTo(experiencedPremium) > 0,
-            "Expected young driver $youngPremium > experienced $experiencedPremium")
+        assertTrue(
+            youngPremium.compareTo(experiencedPremium) > 0,
+            "Expected young driver $youngPremium > experienced $experiencedPremium",
+        )
     }
 
     @Test
@@ -81,8 +83,10 @@ class RatingEngineTest {
         stubFactors(claims = "1.78")
         val twoClaims = engine.calculatePremium(request(claims = 2)).grossPremium.amount
 
-        assertTrue(twoClaims.compareTo(cleanRecord) > 0,
-            "Expected two-claims $twoClaims > clean record $cleanRecord")
+        assertTrue(
+            twoClaims.compareTo(cleanRecord) > 0,
+            "Expected two-claims $twoClaims > clean record $cleanRecord",
+        )
     }
 
     @Test
@@ -93,8 +97,10 @@ class RatingEngineTest {
         stubFactors(usage = "1.40")
         val highUsage = engine.calculatePremium(request(annualKm = 35000)).grossPremium.amount
 
-        assertTrue(highUsage.compareTo(lowUsage) > 0,
-            "Expected high-usage $highUsage > low-usage $lowUsage")
+        assertTrue(
+            highUsage.compareTo(lowUsage) > 0,
+            "Expected high-usage $highUsage > low-usage $lowUsage",
+        )
     }
 
     @Test
@@ -105,8 +111,10 @@ class RatingEngineTest {
         stubFactors(ncb = "0.60")
         val maxBonus = engine.calculatePremium(request(licenceYears = 10)).grossPremium.amount
 
-        assertTrue(maxBonus.compareTo(noBonus) < 0,
-            "Expected max-NCB $maxBonus < no-NCB $noBonus")
+        assertTrue(
+            maxBonus.compareTo(noBonus) < 0,
+            "Expected max-NCB $maxBonus < no-NCB $noBonus",
+        )
     }
 
     @Test
@@ -115,9 +123,11 @@ class RatingEngineTest {
         val result = engine.calculatePremium(request())
 
         assertEquals(5, result.factors.size)
-        assertTrue(result.factors.map { it.name }.containsAll(
-            listOf("AGE", "VEHICLE_AGE", "USAGE", "CLAIMS", "NCB")
-        ))
+        assertTrue(
+            result.factors.map { it.name }.containsAll(
+                listOf("AGE", "VEHICLE_AGE", "USAGE", "CLAIMS", "NCB"),
+            ),
+        )
     }
 
     @Test
@@ -126,17 +136,21 @@ class RatingEngineTest {
         stubFactors()
         val result = engine.calculatePremium(request())
 
-        assertTrue(result.stampDuty.amount.compareTo(BigDecimal("45.00")) == 0,
-            "Expected NSW stamp duty 45.00 (9% of 500.00), got ${result.stampDuty.amount}")
+        assertTrue(
+            result.stampDuty.amount.compareTo(BigDecimal("45.00")) == 0,
+            "Expected NSW stamp duty 45.00 (9% of 500.00), got ${result.stampDuty.amount}",
+        )
     }
 
     @Test
     fun `minimum age 17 is rated without error`() {
-        stubFactors(age = "1.95")   // young driver band
+        stubFactors(age = "1.95") // young driver band
         val result = engine.calculatePremium(request(age = 17))
 
-        assertTrue(result.grossPremium.amount.compareTo(BigDecimal.ZERO) > 0,
-            "Expected positive premium for minimum-age driver")
+        assertTrue(
+            result.grossPremium.amount.compareTo(BigDecimal.ZERO) > 0,
+            "Expected positive premium for minimum-age driver",
+        )
     }
 
     @Test
@@ -145,8 +159,10 @@ class RatingEngineTest {
         val result = engine.calculatePremium(request())
 
         val vehicleAgeFactor = result.factors.first { it.name == "VEHICLE_AGE" }.factor
-        assertTrue(vehicleAgeFactor.compareTo(BigDecimal("1.25")) == 0,
-            "Expected VEHICLE_AGE factor 1.25, got $vehicleAgeFactor")
+        assertTrue(
+            vehicleAgeFactor.compareTo(BigDecimal("1.25")) == 0,
+            "Expected VEHICLE_AGE factor 1.25, got $vehicleAgeFactor",
+        )
     }
 
     @Test
@@ -155,8 +171,10 @@ class RatingEngineTest {
         val result = engine.calculatePremium(request(annualKm = 0))
 
         val usageFactor = result.factors.first { it.name == "USAGE" }.factor
-        assertTrue(usageFactor.compareTo(BigDecimal("0.88")) == 0,
-            "Expected USAGE factor 0.88 for zero km, got $usageFactor")
+        assertTrue(
+            usageFactor.compareTo(BigDecimal("0.88")) == 0,
+            "Expected USAGE factor 0.88 for zero km, got $usageFactor",
+        )
     }
 
     @Test
@@ -167,7 +185,9 @@ class RatingEngineTest {
         stubFactors(claims = "1.00")
         val noRisk = engine.calculatePremium(request(claims = 0)).grossPremium.amount
 
-        assertTrue(highRisk.compareTo(noRisk) > 0,
-            "Expected 3-claim premium $highRisk > no-claim $noRisk")
+        assertTrue(
+            highRisk.compareTo(noRisk) > 0,
+            "Expected 3-claim premium $highRisk > no-claim $noRisk",
+        )
     }
 }

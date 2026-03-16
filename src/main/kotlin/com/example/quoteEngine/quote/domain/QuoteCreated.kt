@@ -8,11 +8,11 @@ data class QuoteCreated(
     val policyHolderName: String?,
     val state: String?,
     val vehicle: Vehicle,
-    val driver: Driver
+    val driver: Driver,
 ) : DomainEvent(
-    aggregateId = quoteId,
-    aggregateType = "Quote",
-    eventType = "QuoteCreated"
-) {
+        aggregateId = quoteId,
+        aggregateType = "Quote",
+        eventType = "QuoteCreated",
+    ) {
     override val topic = "quote.created"
 }

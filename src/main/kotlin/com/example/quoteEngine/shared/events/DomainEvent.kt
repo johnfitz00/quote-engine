@@ -8,7 +8,7 @@ abstract class DomainEvent(
     val aggregateType: String,
     val eventType: String,
     val eventId: UUID = UUID.randomUUID(),
-    val occurredAt: Instant = Instant.now()
+    val occurredAt: Instant = Instant.now(),
 ) {
     abstract val topic: String
 }

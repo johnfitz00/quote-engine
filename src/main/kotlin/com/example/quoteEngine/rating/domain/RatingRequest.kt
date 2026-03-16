@@ -8,5 +8,5 @@ data class RatingRequest(
     val vehicle: Vehicle,
     val driver: Driver,
     val state: String,
-    val effectiveDate: LocalDate
+    val effectiveDate: LocalDate,
 )

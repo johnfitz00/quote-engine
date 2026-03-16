@@ -29,8 +29,10 @@ class RatingConsumer(
             val event = objectMapper.readValue(payload, QuoteRatingRequested::class.java)
             val quoteId = event.aggregateId
 
-            val quote = quoteRepository.findById(quoteId)
-                .orElseThrow { QuoteNotFoundException(quoteId) }
+            val quote =
+                quoteRepository
+                    .findById(quoteId)
+                    .orElseThrow { QuoteNotFoundException(quoteId) }
 
             if (quote.status != QuoteStatus.RATING_IN_PROGRESS) {
                 log.warn("Quote {} already processed (status={}), skipping", quoteId, quote.status)
