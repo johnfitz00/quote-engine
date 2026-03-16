@@ -324,16 +324,19 @@ class QuoteControllerTest {
     ) = QuoteResponse(
         id = id,
         policyHolderName = policyHolderName,
+        state = "NSW",
         vehicle = VehicleResponse(year = 2020, make = "Toyota", model = "Corolla", annualKm = 15000),
         driver = DriverResponse(age = 34, licenceYears = 12, atFaultClaims = 0),
         status = status,
         createdAt = Instant.now(),
-        updatedAt = Instant.now()
+        updatedAt = Instant.now(),
+        ratingResult = null
     )
 
     private fun validCreateJson() = """
         {
           "policyHolderName": "Alice Martin",
+          "state": "NSW",
           "vehicle": { "year": 2020, "make": "Toyota", "model": "Corolla", "annualKm": 15000 },
           "driver": { "age": 34, "licenceYears": 12, "atFaultClaims": 0 }
         }
@@ -342,6 +345,7 @@ class QuoteControllerTest {
     private fun invalidCreateJson() = """
         {
           "policyHolderName": "",
+          "state": "NSW",
           "vehicle": { "year": 2020, "make": "Toyota", "model": "Corolla", "annualKm": 15000 },
           "driver": { "age": 14, "licenceYears": 0, "atFaultClaims": 0 }
         }
@@ -350,6 +354,7 @@ class QuoteControllerTest {
     private fun validUpdateJson(name: String = "Alice Martin") = """
         {
           "policyHolderName": "$name",
+          "state": "NSW",
           "vehicle": { "year": 2020, "make": "Toyota", "model": "Corolla", "annualKm": 15000 },
           "driver": { "age": 34, "licenceYears": 12, "atFaultClaims": 0 }
         }
@@ -358,6 +363,7 @@ class QuoteControllerTest {
     private fun invalidUpdateJson() = """
         {
           "policyHolderName": "",
+          "state": "NSW",
           "vehicle": { "year": 2020, "make": "Toyota", "model": "Corolla", "annualKm": 15000 },
           "driver": { "age": 34, "licenceYears": 12, "atFaultClaims": 0 }
         }

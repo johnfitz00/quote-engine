@@ -31,6 +31,8 @@ dependencies {
 	developmentOnly("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2")
 	runtimeOnly("com.h2database:h2")
 	testImplementation("com.ninja-squad:springmockk:5.0.1")
+	testImplementation("io.kotest:kotest-property:5.9.1")
+	testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
 	testImplementation("org.springframework.boot:spring-boot-starter-actuator-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-validation-test")
@@ -53,4 +55,7 @@ allOpen {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+	testLogging {
+		showStandardStreams = true
+	}
 }

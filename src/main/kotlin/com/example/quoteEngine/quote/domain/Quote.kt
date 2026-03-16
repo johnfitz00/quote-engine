@@ -1,5 +1,6 @@
 package com.example.quoteEngine.quote.domain
 
+import com.example.quoteEngine.rating.domain.RatingResult
 import jakarta.persistence.Embedded
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -17,6 +18,7 @@ class Quote {
     var id: UUID? = null
 
     var policyHolderName: String? = null
+    var state: String? = null
 
     @Embedded
     var vehicle: Vehicle? = null
@@ -25,6 +27,9 @@ class Quote {
     var driver: Driver? = null
 
     var status: QuoteStatus = QuoteStatus.DRAFT
+
+    @Embedded
+    var ratingResult: RatingResult? = null
 
     @CreationTimestamp
     var createdAt: Instant? = null

@@ -196,6 +196,7 @@ class QuoteIntegrationTest {
     private fun validCreateJson() = """
         {
           "policyHolderName": "Alice Martin",
+          "state": "NSW",
           "vehicle": { "year": 2020, "make": "Toyota", "model": "Corolla", "annualKm": 15000 },
           "driver": { "age": 34, "licenceYears": 12, "atFaultClaims": 0 }
         }
@@ -204,6 +205,7 @@ class QuoteIntegrationTest {
     private fun validUpdateJson(name: String) = """
         {
           "policyHolderName": "$name",
+          "state": "NSW",
           "vehicle": { "year": 2020, "make": "Toyota", "model": "Corolla", "annualKm": 15000 },
           "driver": { "age": 34, "licenceYears": 12, "atFaultClaims": 0 }
         }

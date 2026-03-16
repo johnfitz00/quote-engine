@@ -8,14 +8,18 @@ import com.example.quoteEngine.quote.domain.Quote
 import com.example.quoteEngine.quote.domain.QuoteNotFoundException
 import com.example.quoteEngine.quote.domain.QuoteStatus
 import com.example.quoteEngine.quote.infrastructure.QuoteRepository
+import com.example.quoteEngine.rating.application.RatingEngine
+import com.example.quoteEngine.rating.domain.RatingRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
 import java.util.UUID
 
 @Service
 class QuoteService(
     private val quoteRepository: QuoteRepository,
-    private val quoteMapper: QuoteMapper
+    private val quoteMapper: QuoteMapper,
+    private val ratingEngine: RatingEngine,
 ) {
 
     @Transactional
@@ -50,8 +54,23 @@ class QuoteService(
     }
 
     @Transactional
-    fun rateQuote(id: UUID): QuoteResponse =
-        quoteMapper.toResponse(transitionTo(id, QuoteStatus.RATED))
+    fun rateQuote(id: UUID): QuoteResponse {
+        val quote = quoteRepository.findById(id).orElseThrow { QuoteNotFoundException(id) }
+        if (!quote.status.canTransitionTo(QuoteStatus.RATED)) {
+            throw InvalidTransitionException(quote.status, QuoteStatus.RATED)
+        }
+        val state = quote.state
+            ?: throw IllegalStateException("Quote $id has no state — update the quote before rating")
+        val request = RatingRequest(
+            vehicle = quote.vehicle!!,
+            driver = quote.driver!!,
+            state = state,
+            effectiveDate = LocalDate.now()
+        )
+        quote.ratingResult = ratingEngine.calculatePremium(request)
+        quote.status = QuoteStatus.RATED
+        return quoteMapper.toResponse(quoteRepository.saveAndFlush(quote))
+    }
 
     @Transactional
     fun bindQuote(id: UUID): QuoteResponse =

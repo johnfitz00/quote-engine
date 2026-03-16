@@ -12,7 +12,10 @@
       "Bash(find build/reports/tests -name \"*.xml\" | xargs grep -l \"QuoteControllerTest\" 2>/dev/null | head -1 | xargs cat 2>/dev/null | grep -E 'testcase|testsuite' | head -40)",
       "Bash(find build/reports -name \"*.xml\" 2>/dev/null | head -20)",
       "Bash(find build:*)",
-      "Bash(grep -h 'testsuite\\\\|failures\\\\|errors' build/test-results/test/TEST-com.example.quoteEngine.quote.api.QuoteControllerTest*.xml | grep 'testsuite')"
+      "Bash(grep -h 'testsuite\\\\|failures\\\\|errors' build/test-results/test/TEST-com.example.quoteEngine.quote.api.QuoteControllerTest*.xml | grep 'testsuite')",
+      "Bash(./gradlew compileTestKotlin 2>&1)",
+      "Bash(./gradlew clean:*)",
+      "Bash(tree -L 3 /Users/john/Development/java/quoteEngine -I 'node_modules|.idea|.gradle|build|.DS_Store' 2>/dev/null || find /Users/john/Development/java/quoteEngine -type d -not -path '*/\\\\.*' -not -path '*/build/*' -not -path '*/\\\\.gradle/*' | sort)"
     ]
   }
 }
