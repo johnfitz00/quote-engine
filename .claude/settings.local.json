@@ -40,7 +40,16 @@
       "Bash(lsof -ti :8080 | xargs kill -9 2>/dev/null; ./gradlew build 2>&1 | tail -8)",
       "Bash(curl -s http://localhost:8080/v1/quotes/65859f0e-2940-4b33-9e36-905535933b97 | python3 -m json.tool | grep -E \"status|grossPremium\")",
       "Bash(lsof -ti :8080 | xargs kill -9 2>/dev/null; ./gradlew test --tests \"com.example.quoteEngine.rating.infrastructure.RatingConsumerIntegrationTest\" 2>&1 | tail -20)",
-      "Bash(git rm:*)"
+      "Bash(git rm:*)",
+      "WebFetch(domain:detekt.dev)",
+      "Bash(./gradlew detekt:*)",
+      "WebFetch(domain:plugins.gradle.org)",
+      "WebFetch(domain:search.maven.org)",
+      "Bash(curl -s \"https://plugins.gradle.org/plugin/io.gitlab.arturbosch.detekt\" 2>/dev/null | grep -o '\"version\":\"[^\"]*\"' | head -10)",
+      "Bash(curl -s \"https://search.maven.org/solrsearch/select?q=g:io.gitlab.arturbosch.detekt+AND+a:detekt&rows=20&wt=json\" 2>/dev/null | python3 -c \"import sys,json; data=json.load\\(sys.stdin\\); [print\\(d['latestVersion']\\) for d in data.get\\('response',{}\\).get\\('docs',[]\\)]\" 2>/dev/null || echo \"failed\")",
+      "Bash(curl -s \"https://search.maven.org/solrsearch/select?q=g:io.gitlab.arturbosch.detekt+AND+a:detekt&rows=5&wt=json\" 2>&1 | head -5)",
+      "Bash(curl -s \"https://search.maven.org/solrsearch/select?q=g:io.gitlab.arturbosch.detekt&rows=5&wt=json\" 2>&1 | python3 -c \"import sys,json; data=json.load\\(sys.stdin\\); [print\\(f\\\\\"{d.get\\('a',''\\)} {d.get\\('latestVersion',''\\)}\\\\\"\\) for d in data.get\\('response',{}\\).get\\('docs',[]\\)]\")",
+      "WebFetch(domain:www.answeroverflow.com)"
     ]
   }
 }

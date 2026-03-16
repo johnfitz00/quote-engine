@@ -70,6 +70,17 @@ detekt {
     config.setFrom("$projectDir/config/detekt/detekt.yml")
 }
 
+// detekt 1.23.8 was compiled with Kotlin 2.0.21. The Spring BOM forces Kotlin 2.2.x onto
+// all configurations, causing a version mismatch at runtime. Pin Kotlin to 2.0.21 within
+// the detekt configuration only so the analysing compiler matches what detekt expects.
+configurations.matching { it.name == "detekt" }.all {
+    resolutionStrategy.eachDependency {
+        if (requested.group == "org.jetbrains.kotlin") {
+            useVersion("2.0.21")
+        }
+    }
+}
+
 ktlint {
     version.set("1.4.1")
 }

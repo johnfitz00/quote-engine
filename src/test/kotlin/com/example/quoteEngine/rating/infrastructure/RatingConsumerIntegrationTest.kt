@@ -23,11 +23,16 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 @SpringBootTest
-@EmbeddedKafka(partitions = 1, topics = ["quote.created", "quote.rating", "quote.rated", "quote.bound", "quote.expired"])
-@TestPropertySource(properties = [
-    "spring.kafka.bootstrap-servers=\${spring.embedded.kafka.brokers}",
-    "spring.kafka.listener.auto-startup=true",
-])
+@EmbeddedKafka(
+    partitions = 1,
+    topics = ["quote.created", "quote.rating", "quote.rated", "quote.bound", "quote.expired"],
+)
+@TestPropertySource(
+    properties = [
+        "spring.kafka.bootstrap-servers=\${spring.embedded.kafka.brokers}",
+        "spring.kafka.listener.auto-startup=true",
+    ],
+)
 @DirtiesContext
 class RatingConsumerIntegrationTest {
     @Autowired lateinit var quoteRepository: QuoteRepository

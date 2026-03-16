@@ -59,7 +59,8 @@ class QuoteMapper {
 
     private fun Vehicle.toResponse() = VehicleResponse(year = year, make = make, model = model, annualKm = annualKm)
 
-    private fun Driver.toResponse() = DriverResponse(age = age, licenceYears = licenceYears, atFaultClaims = atFaultClaims)
+    private fun Driver.toResponse() =
+        DriverResponse(age = age, licenceYears = licenceYears, atFaultClaims = atFaultClaims)
 
     private fun RatingResult.toResponse() =
         RatingResultResponse(

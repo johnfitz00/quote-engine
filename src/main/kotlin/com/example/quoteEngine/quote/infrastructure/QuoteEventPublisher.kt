@@ -31,7 +31,10 @@ class QuoteEventPublisher(
             .send(event.topic, key, payload)
             .whenComplete { _, ex ->
                 if (ex != null) {
-                    log.error("Failed to publish {} to topic={} key={}: {}", event.eventType, event.topic, key, ex.message)
+                    log.error(
+                        "Failed to publish {} to topic={} key={}: {}",
+                        event.eventType, event.topic, key, ex.message,
+                    )
                 } else {
                     log.debug("Published {} to topic={} key={}", event.eventType, event.topic, key)
                 }

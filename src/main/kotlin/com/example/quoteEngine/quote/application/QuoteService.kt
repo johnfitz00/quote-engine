@@ -72,7 +72,7 @@ class QuoteService(
         }
         val state =
             quote.state
-                ?: throw IllegalStateException("Quote $id has no state — update the quote before rating")
+                ?: error("Quote $id has no state — update the quote before rating")
         val ratingRequest =
             RatingRequest(
                 vehicle = quote.vehicle!!,

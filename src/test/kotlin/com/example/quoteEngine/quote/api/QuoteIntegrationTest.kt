@@ -18,7 +18,10 @@ import org.springframework.test.web.servlet.put
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@EmbeddedKafka(partitions = 1, topics = ["quote.created", "quote.rating", "quote.rated", "quote.bound", "quote.expired"])
+@EmbeddedKafka(
+    partitions = 1,
+    topics = ["quote.created", "quote.rating", "quote.rated", "quote.bound", "quote.expired"],
+)
 @TestPropertySource(properties = ["spring.kafka.bootstrap-servers=\${spring.embedded.kafka.brokers}"])
 @DirtiesContext
 class QuoteIntegrationTest {
@@ -186,7 +189,9 @@ class QuoteIntegrationTest {
                 content = validUpdateJson("Bob Smith")
             }.andExpect {
                 status { isConflict() }
-                jsonPath("$.message") { value("Cannot edit a RATING_IN_PROGRESS quote — only DRAFT quotes can be updated") }
+                jsonPath("$.message") {
+                    value("Cannot edit a RATING_IN_PROGRESS quote — only DRAFT quotes can be updated")
+                }
             }
     }
 
